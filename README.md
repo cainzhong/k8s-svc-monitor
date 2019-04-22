@@ -14,4 +14,4 @@ Monitor k8s service has a endpoint
    ![avatar](https://github.com/cainzhong/k8s-svc-monitor/blob/master/assets/k8s_svc_downtime_overview.png)
 
    **Downtime detail for specified k8s svc:**  
-   ![image](../assets/k8s_svc_downtime_detail.png)
+   ![avatar](https://github.com/cainzhong/k8s-svc-monitor/blob/master/assets/k8s_svc_downtime_detail.png)
