@@ -9,7 +9,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func GetK8sSvc(namespace string) {
+func GetAllSvc(namespace string) {
 	clientset := GetClientset();
 	services, err := clientset.CoreV1().Services(namespace).List(metav1.ListOptions{})
 

@@ -1,0 +1,39 @@
+{
+  "start_timestamp": 1556113099764,
+  "list": [
+    {
+      "name": "service 1",
+      "detail": [
+        {
+          "timestamp": 1556113099764,
+          "num_endpoint": 1
+        },
+        {
+          "timestamp": 1556113120046,
+          "num_endpoint": 0
+        },
+        {
+          "timestamp": 1556113133534,
+          "num_endpoint": 2
+        }
+      ]
+    },
+    {
+      "name": "service 2",
+      "detail": [
+        {
+          "timestamp": 1556113099764,
+          "num_endpoint": 0
+        },
+        {
+          "timestamp": 1556113120046,
+          "num_endpoint": 1
+        },
+        {
+          "timestamp": 1556113133534,
+          "num_endpoint": 2
+        }
+      ]
+    }
+  ]
+}
