@@ -12,5 +12,5 @@ type Svc struct {
 
 type Detail struct {
 	Timestamp   int64 `json:timestamp`
-	NumEndpoint int8  `json:num_endpoint`
+	NumEndpoint int  `json:num_endpoint`
 }

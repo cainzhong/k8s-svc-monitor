@@ -18,9 +18,10 @@ limitations under the License.
 package main
 
 import (
+	"encoding/json"
 	"flag"
-	"fmt"
 	"github.com/wonderivan/logger"
+	"io/ioutil"
 	"k8s-svc-monitor/api/k8s"
 	"k8s-svc-monitor/api/result"
 	"k8s.io/client-go/kubernetes"
@@ -62,7 +63,6 @@ func init() {
 	}`
 	logger.SetLogger(logConfig)
 }
-
 func main() {
 	var kubeconfig *string
 	/*if home := homeDir(); home != "" {
@@ -94,11 +94,60 @@ func main() {
 	svcDowntime := &result.SvcDowntime{}
 	svcDowntime.StartTimestamp = time.Now().Unix()
 	svcDowntime.List = make([]result.Svc, len(services))
-	for i:=0;i< len(services);i++ {
+	for i := 0; i < len(services); i++ {
 		svcDowntime.List[i].Name = services[i].Name
-		// kubectl get endpoint -n itsma1
+		detail := result.Detail{}
+
+		endpoints, err := k8s.GetEndpoints(clientset, namespace, services[i].Name)
+		if err != nil {
+			logger.Error(err)
+		}
+		subsets := endpoints.Subsets
+		detail.Timestamp = time.Now().Unix()
+		detail.NumEndpoint = len(subsets)
+		logger.Info("Endpoints %s has %d Subsets.", endpoints.Name, len(subsets))
+		var details []result.Detail
+		details = append(details, detail)
+		svcDowntime.List[i].Details = details
 	}
-	fmt.Println(fmt.Sprintf("%+v",svcDowntime))
+
+	MonitorEndpointsTimer(svcDowntime, clientset, namespace)
+}
+
+func MonitorEndpointsTimer(svcDowntime *result.SvcDowntime, clientset *kubernetes.Clientset, namespace string) {
+	monitorEndpointsTimer := time.NewTicker(20 * time.Second)
+	for {
+		select {
+		case <-monitorEndpointsTimer.C:
+			// 同步代码
+			MonitorEndpoints(svcDowntime, clientset, namespace)
+
+			filename := "./api/k8s_svc_downtime.json.json"
+			logger.Info("Save it into file %s", filename)
+			b, err := json.Marshal(svcDowntime)
+			if err != nil {
+				logger.Error(err)
+			}
+			ioutil.WriteFile(filename, b, 0644)
+		}
+	}
+}
+
+func MonitorEndpoints(svcDowntime *result.SvcDowntime, clientset *kubernetes.Clientset, namespace string) {
+	svcList := svcDowntime.List
+	for i := 0; i < len(svcList); i++ {
+		detail := result.Detail{}
+
+		endpoints, err := k8s.GetEndpoints(clientset, namespace, svcList[i].Name)
+		if err != nil {
+			logger.Error(err)
+		}
+		subsets := endpoints.Subsets
+		detail.Timestamp = time.Now().Unix()
+		detail.NumEndpoint = len(subsets)
+		logger.Info("Endpoints %s has %d Subsets.", endpoints.Name, len(subsets))
+		svcDowntime.List[i].Details = append(svcDowntime.List[i].Details, detail)
+	}
 }
 
 func homeDir() string {

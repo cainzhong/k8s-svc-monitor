@@ -27,12 +27,12 @@ func GetAllSvc(namespace string) {
 }
 
 func GetAllServices(clientset *kubernetes.Clientset, namespace string) (*v1.ServiceList, error) {
-	services, err := clientset.CoreV1().Services(namespace).List(metav1.ListOptions{})
+	serviceList, err := clientset.CoreV1().Services(namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
 
-	return services, nil
+	return serviceList, nil
 }
 
 var clientsetInit = false
